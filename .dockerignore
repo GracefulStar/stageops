@@ -1,0 +1,14 @@
+.git
+node_modules
+dist
+frontend-dist
+.wrangler
+.sites-runtime
+.env*
+**/.env
+**/.venv
+**/__pycache__
+**/.pytest_cache
+**/.ruff_cache
+*.tar.gz
+*.zip
