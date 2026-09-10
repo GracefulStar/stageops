@@ -1,0 +1,150 @@
+{
+  "categories": [
+    {
+      "id": "sound",
+      "title": "Акустика и пульты",
+      "short": "Звук",
+      "description": "Акустические системы · Микшерные консоли",
+      "image": "/images/sound.png",
+      "total": 118
+    },
+    {
+      "id": "signal",
+      "title": "Микрофоны и коммутация",
+      "short": "Сигнал",
+      "description": "Микрофоны · Кабели · Стойки",
+      "image": "/images/signal.png",
+      "total": 192
+    },
+    {
+      "id": "backline",
+      "title": "Бэклайн",
+      "short": "Инструменты",
+      "description": "Клавишные · Усилители · Ударные",
+      "image": "/images/backline.png",
+      "total": 33
+    }
+  ],
+  "products": [
+    {
+      "id": "pa-kudo",
+      "category": "sound",
+      "name": "L-Acoustics KUDO",
+      "kind": "Акустическая система",
+      "detail": "Элемент линейного массива",
+      "total": 42,
+      "releaseDay": 17,
+      "freeUnits": 0
+    },
+    {
+      "id": "sub-sb28",
+      "category": "sound",
+      "name": "L-Acoustics SB28",
+      "kind": "Сабвуфер",
+      "detail": "Низкочастотная система",
+      "total": 34,
+      "releaseDay": 23,
+      "freeUnits": 0
+    },
+    {
+      "id": "mixer-ql1",
+      "category": "sound",
+      "name": "Yamaha QL1",
+      "kind": "Микшерная консоль",
+      "detail": "Цифровой пульт",
+      "total": 18,
+      "releaseDay": 17,
+      "freeUnits": 0
+    },
+    {
+      "id": "mixer-sq6",
+      "category": "sound",
+      "name": "Allen & Heath SQ6",
+      "kind": "Микшерная консоль",
+      "detail": "Цифровой пульт",
+      "total": 24,
+      "releaseDay": 10,
+      "freeUnits": 0
+    },
+    {
+      "id": "mic-sm58",
+      "category": "signal",
+      "name": "Shure SM58",
+      "kind": "Вокальный микрофон",
+      "detail": "Динамический · проводной",
+      "total": 36,
+      "releaseDay": 17,
+      "freeUnits": 0
+    },
+    {
+      "id": "mic-sm57",
+      "category": "signal",
+      "name": "Shure SM57",
+      "kind": "Инструментальный микрофон",
+      "detail": "Динамический · проводной",
+      "total": 28,
+      "releaseDay": 8,
+      "freeUnits": 2
+    },
+    {
+      "id": "stand-km",
+      "category": "signal",
+      "name": "K&M",
+      "kind": "Микрофонная стойка",
+      "detail": "Стойка с журавлём",
+      "total": 32,
+      "releaseDay": 17,
+      "freeUnits": 4
+    },
+    {
+      "id": "cable-klotz",
+      "category": "signal",
+      "name": "Klotz Snake 16",
+      "kind": "Коммутация",
+      "detail": "Сценический мультикор",
+      "total": 96,
+      "releaseDay": 12,
+      "freeUnits": 6
+    },
+    {
+      "id": "keys-nord",
+      "category": "backline",
+      "name": "Clavia Nord Stage 2",
+      "kind": "Клавишные",
+      "detail": "Сценический инструмент",
+      "total": 7,
+      "releaseDay": 17,
+      "freeUnits": 0
+    },
+    {
+      "id": "keys-yamaha",
+      "category": "backline",
+      "name": "Yamaha Motif XF8",
+      "kind": "Клавишные",
+      "detail": "Рабочая станция",
+      "total": 12,
+      "releaseDay": 21,
+      "freeUnits": 1
+    },
+    {
+      "id": "amp-fender",
+      "category": "backline",
+      "name": "Fender Twin Reverb",
+      "kind": "Гитарный усилитель",
+      "detail": "Ламповый комбоусилитель",
+      "total": 9,
+      "releaseDay": 17,
+      "freeUnits": 0
+    },
+    {
+      "id": "drums-yamaha",
+      "category": "backline",
+      "name": "Yamaha Stage Custom",
+      "kind": "Ударные",
+      "detail": "Акустическая установка",
+      "total": 5,
+      "releaseDay": 19,
+      "freeUnits": 0
+    }
+  ]
+}

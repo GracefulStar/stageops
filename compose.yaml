@@ -1,0 +1,40 @@
+services:
+  db:
+    image: postgres:16-bookworm
+    environment:
+      POSTGRES_USER: stageops
+      POSTGRES_PASSWORD: ${STAGEOPS_DB_PASSWORD:-stageops-local-demo}
+      POSTGRES_DB: stageops
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U stageops -d stageops"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+  migrate:
+    build: .
+    environment:
+      STAGEOPS_DATABASE_URL: postgresql+psycopg://stageops:${STAGEOPS_DB_PASSWORD:-stageops-local-demo}@db:5432/stageops
+    command: [".venv/bin/alembic", "upgrade", "head"]
+    depends_on:
+      db:
+        condition: service_healthy
+  app:
+    build: .
+    environment:
+      STAGEOPS_DATABASE_URL: postgresql+psycopg://stageops:${STAGEOPS_DB_PASSWORD:-stageops-local-demo}@db:5432/stageops
+      STAGEOPS_ALLOWED_ORIGINS: ${STAGEOPS_ALLOWED_ORIGINS:-["http://localhost:8000"]}
+      STAGEOPS_COOKIE_SECURE: ${STAGEOPS_COOKIE_SECURE:-false}
+    ports:
+      - "127.0.0.1:8000:8000"
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", ".venv/bin/python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/healthz')"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+volumes:
+  postgres_data:

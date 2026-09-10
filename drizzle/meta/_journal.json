@@ -1,0 +1,13 @@
+{
+  "version": "7",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1788958077300,
+      "tag": "0000_fantastic_frightful_four",
+      "breakpoints": true
+    }
+  ]
+}
