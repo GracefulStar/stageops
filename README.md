@@ -1,96 +1,29 @@
 # StageOps
 
-Демонстрационный сервис аренды сценического оборудования. Пользователь собирает заказ, выбирает общие или отдельные даты для каждой позиции и получает номер заказа. Сервер назначает конкретные единицы оборудования; если их недостаточно, создаёт внутреннюю заявку на закупку недостающего количества.
+StageOps - demonstration rental service for stage equipment with a focus on backend logic: rental calendar, inventory state, physical asset reservations, and automatic internal purchase requests when stock is insufficient.
 
-## Основной проект: Python + PostgreSQL
+The user builds an order in the interface, chooses dates for the whole cart or for individual items, and receives an order number. The server decides which physical equipment units can be assigned and which items require an internal operator request.
 
-**FastAPI, SQLAlchemy 2, PostgreSQL, Alembic, pytest.** Готовый интерфейс на React собирается отдельно и раздаётся тем же Python-приложением. Отдельный Node.js-сервер для этой версии не нужен.
+[Live demo](https://stageops-rental.kiriyama-issa.chatgpt.site)
 
-- SQL-база хранит модели оборудования, физические единицы, заказы, брони, заявки на закупку и события дефицита.
-- Заказ создаётся одной транзакцией: либо сохраняется всё, либо ничего.
-- Блокировка строки сценария защищает распределение от одновременных заказов.
-- Ограничение PostgreSQL `EXCLUDE` дополнительно запрещает пересекающиеся брони одной единицы.
-- Повторная отправка возвращает прежний заказ; тот же ключ с изменёнными данными отклоняется.
-- API проверяет контакты, количество и даты независимо от браузера.
-- У каждого браузера свой демонстрационный парк, поэтому посетители не мешают друг другу.
+## What This Project Shows
 
-### Статус опубликованной демонстрации
+**Python / FastAPI / PostgreSQL / SQLAlchemy 2 / Alembic / pytest / React / TypeScript**
 
-[Опубликованный StageOps](https://stageops-rental.kiriyama-issa.chatgpt.site) работает на исходном сервере TypeScript + D1 (SQLite). Это не размещённый Python-сервер. Полная Python-версия находится в этом репозитории и запускается по инструкции ниже.
+- Domain modeling: catalog, physical assets, orders, reservations, shortage events, and purchase requests.
+- Transactional order creation: the order is saved completely or not saved at all.
+- Date-based allocation logic with overlapping rental periods.
+- Race-condition protection: row-level locking and a PostgreSQL `EXCLUDE` constraint against double-booking one physical unit.
+- Idempotency key support to prevent duplicate orders after repeated form submission.
+- Server-side validation for contacts, quantities, and rental dates.
+- A polished React interface that demonstrates the backend rules through a complete user flow.
 
-Текущий хостинг демонстрации не запускает обычный Python-процесс и PostgreSQL. Для публичной Python-версии нужен отдельный хостинг приложения и базы. Настройка существующего адреса описана в [руководстве по запуску](docs/deployment.md). До этого нельзя представлять опубликованную демонстрацию как работающую на Python.
+### Live Demo Status
 
-## Запуск целиком
+[StageOps live demo](https://stageops-rental.kiriyama-issa.chatgpt.site) runs on the original TypeScript + D1 prototype. It is not a hosted Python server. The full Python/FastAPI/PostgreSQL version is included in this repository and can be run locally.
 
-Требуется Docker с Compose. Из корня проекта:
+## Local Run
 
 ```sh
 docker compose up --build
 ```
-
-Compose запускает PostgreSQL, применяет миграцию и затем поднимает Python с готовым интерфейсом. Приложение доступно на [localhost:8000](http://localhost:8000), описание API на [localhost:8000/docs](http://localhost:8000/docs).
-
-Данные переживают перезапуск благодаря тому PostgreSQL. `docker compose down` останавливает приложение; не добавляйте `-v`, если данные нужно сохранить. Пароль по умолчанию предназначен только для локальной демонстрации, порт базы наружу не опубликован.
-
-Вариант без Docker, настройки и требования к размещению: [docs/deployment.md](docs/deployment.md).
-
-## Проверить бизнес-логику
-
-Выберите одну единицу **L-Acoustics KUDO**. Сценарий привязан к следующему месяцу относительно момента его создания.
-
-| Даты в месяце сценария | Результат внутри системы |
-| --- | --- |
-| 1-10 | Одна заявка на закупку |
-| 17-20 | Бронь одной имеющейся единицы |
-| 2-20 | Заявка: имеющаяся единица недоступна весь срок |
-| 17-20 после заказа на 2-20 | Имеющаяся единица всё ещё может быть назначена |
-| 18-20 после физической брони на 17-20 | Заявка: единица уже занята |
-| 21-21 после физической брони на 17-20 | Повторное использование вернувшейся единицы |
-| Три единицы на 17-20 | Одна бронь и заявка только на две недостающие |
-
-Результат виден на `/operator` в том же браузере. Склад намеренно не присутствует в навигации клиента. «Новый сценарий» создаёт новый парк, не удаляя прежние заказы.
-
-## Начать читать код
-
-| Файл | За что отвечает |
-| --- | --- |
-| `backend/stageops/main.py` | HTTP-маршруты, cookies, ошибки, раздача интерфейса |
-| `backend/stageops/schemas.py` | Проверка входящих данных |
-| `backend/stageops/booking.py` | Заказ, распределение оборудования и дефицит |
-| `backend/stageops/models.py` | Таблицы, связи и ограничения PostgreSQL |
-| `backend/stageops/operations.py` | SQL-расчёт склада и операторская сводка |
-| `backend/stageops/catalog.py` | Каталог, календарное правило и начальный парк |
-| `backend/migrations/` | Создание схемы через Alembic |
-| `backend/tests/` | Проверки правил, API, транзакций и конкурентных запросов |
-| `components/stageops-app.tsx` | Общий интерфейс и запросы к API |
-| `frontend/` | Сборка интерфейса для Python |
-
-[Пошаговый разбор](docs/python-walkthrough.md) объясняет путь одного заказа и SQL-запросы. [Принятые решения](docs/decisions.md) описывают ограничения и компромиссы.
-
-Папки `app/api`, `db`, `drizzle` и серверные TypeScript-модули сохранены для опубликованного прототипа. Для изучения Python-версии их разбирать не требуется.
-
-## Тесты
-
-```sh
-npm ci
-npm run build:frontend
-uv sync --project backend --frozen
-backend/.venv/bin/ruff check backend
-backend/.venv/bin/pytest backend/tests/test_rules.py -q
-```
-
-Для полного набора задайте `STAGEOPS_TEST_DATABASE_URL` с адресом отдельной тестовой PostgreSQL и выполните `backend/.venv/bin/pytest backend/tests -q`. Тесты создают случайную схему и удаляют только её. Нужны права на создание схем и расширения `btree_gist` либо заранее установленное расширение.
-
-В `.github/workflows/python.yml` предусмотрен весь набор на PostgreSQL 16, включая одновременные запросы. Workflow начнёт выполняться после размещения репозитория на GitHub; его наличие не означает, что удалённый CI уже прошёл. Фактические проверки перечислены в [docs/verification.md](docs/verification.md).
-
-## Границы демонстрации
-
-- 12 моделей и 343 физических единицы являются тестовыми данными, а не реальным складом компании.
-- `/operator` показывает сценарий текущего браузера. Это не аутентификация сотрудников и не полноценная административная система.
-- Нет оплаты, писем/SMS, реальных закупок, отмен, приёмки поставок и автоматического удаления старых сценариев.
-- Заявка не увеличивает склад и не гарантирует поставку. Клиенту подтверждается получение заказа.
-- Для публичной эксплуатации нужны ограничения частоты запросов, политика хранения данных, резервное копирование и отдельная модель доступа. Для демонстрации используйте вымышленные контакты из кнопки автозаполнения.
-
-Названия моделей и семейства оборудования сверены с [Renta PRO](https://www.rentapro.ru/sound/). Описания и фотографии магазина не копировались. Изображения категорий сгенерированы и показывают типы оборудования, а не точные фотографии моделей; иконки - Lucide.
-
-Проект реализован с помощью ИИ по авторским продуктовым требованиям. Это учебный проект без заявленного коммерческого опыта; его представление на собеседовании предполагает понимание кода и способность самостоятельно менять правила.
